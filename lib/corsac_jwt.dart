@@ -35,6 +35,7 @@ import 'package:crypto/crypto.dart';
 import 'package:logging/logging.dart';
 import 'package:pointycastle/pointycastle.dart';
 import 'package:rsa_pkcs/rsa_pkcs.dart' as rsa;
+import 'package:ed25519_edwards/ed25519_edwards.dart' as ed;
 
 import 'src/utils.dart';
 
@@ -382,6 +383,35 @@ abstract class JWTSigner {
   List<int> sign(List<int> body);
 
   bool verify(List<int> body, List<int> signature);
+}
+
+/// Signer implementing ED25519 encryption-algorithm.
+class JWTed25519Signer implements JWTSigner {
+  final List<int> secret;
+  final ed.PublicKey publicKey;
+  final ed.PrivateKey privateKey;
+
+  JWTed25519Signer({
+    String secret,
+    this.publicKey,
+    this.privateKey,
+  }) : secret = utf8.encode(secret);
+
+  @override
+  String get algorithm => 'ED25519';
+
+  @override
+  List<int> sign(List<int> body) {
+    final _body = Uint8List.fromList(body);
+    return ed.sign(privateKey, _body);
+  }
+
+  @override
+  bool verify(List<int> body, List<int> signature) {
+    final _body = Uint8List.fromList(body);
+    final _signature = Uint8List.fromList(signature);
+    return ed.verify(publicKey, _body, _signature);
+  }
 }
 
 /// Signer implementing HMAC encryption using SHA256 hashing.
