@@ -1,6 +1,6 @@
 Lightweight implementation of JSON Web Tokens (JWT).
 
-[![Build Status](https://travis-ci.org/corsac-dart/jwt.svg?branch=master)](https://travis-ci.org/corsac-dart/jwt)
+[![Build Status](https://travis-ci.com/corsac-dart/jwt.svg?branch=master)](https://travis-ci.com/corsac-dart/jwt)
 [![codecov](https://codecov.io/gh/corsac-dart/jwt/branch/master/graph/badge.svg)](https://codecov.io/gh/corsac-dart/jwt)
 
 
