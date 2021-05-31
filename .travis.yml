@@ -8,10 +8,10 @@ dart:
 
 script:
   - pub get
-  - pub run test -r expanded
   - dartfmt -n --set-exit-if-changed lib/
   - dart analyze --fatal-infos --fatal-warnings .
-  - pub run test_coverage
+  - pub run test -r expanded --coverage coverage/
+  - pub run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --packages=.packages --report-on=lib
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
