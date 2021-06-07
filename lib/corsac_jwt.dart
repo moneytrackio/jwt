@@ -55,8 +55,7 @@ class JWTRsaSha256Signer implements JWTSigner {
   ///
   /// Both `privateKey` and `publicKey` are expected to be strings in PEM
   /// format.
-  factory JWTRsaSha256Signer(
-      {String? privateKey, String? publicKey, String? password}) {
+  factory JWTRsaSha256Signer({String? privateKey, String? publicKey, String? password}) {
     final parser = rsa.RSAPKCSParser();
 
     rsa.RSAPrivateKey? priv;
@@ -85,20 +84,18 @@ class JWTRsaSha256Signer implements JWTSigner {
   @override
   List<int> sign(List<int> body) {
     if (_privateKey == null) {
-      throw StateError(
-          'RS256 signer requires private key to create signatures.');
+      throw StateError('RS256 signer requires private key to create signatures.');
     }
     final s = Signer('SHA-256/RSA');
-    final key = RSAPrivateKey(_privateKey!.modulus,
-        _privateKey!.privateExponent, _privateKey!.prime1, _privateKey!.prime2);
+    final key =
+        RSAPrivateKey(_privateKey!.modulus, _privateKey!.privateExponent, _privateKey!.prime1, _privateKey!.prime2);
     final param = ParametersWithRandom(
       PrivateKeyParameter<RSAPrivateKey>(key),
       SecureRandom('AES/CTR/PRNG'),
     );
 
     s.init(true, param);
-    final signature =
-        s.generateSignature(Uint8List.fromList(body)) as RSASignature;
+    final signature = s.generateSignature(Uint8List.fromList(body)) as RSASignature;
 
     return signature.bytes.toList(growable: false);
   }
@@ -106,14 +103,12 @@ class JWTRsaSha256Signer implements JWTSigner {
   @override
   bool verify(List<int> body, List<int> signature) {
     if (_publicKey == null) {
-      throw StateError(
-          'RS256 signer requires public key to verify signatures.');
+      throw StateError('RS256 signer requires public key to verify signatures.');
     }
 
     try {
       final s = Signer('SHA-256/RSA');
-      final key = RSAPublicKey(
-          _publicKey!.modulus, BigInt.from(_publicKey!.publicExponent));
+      final key = RSAPublicKey(_publicKey!.modulus, BigInt.from(_publicKey!.publicExponent));
       final param = ParametersWithRandom(
         PublicKeyParameter<RSAPublicKey>(key),
         SecureRandom('AES/CTR/PRNG'),
@@ -123,8 +118,7 @@ class JWTRsaSha256Signer implements JWTSigner {
       final rsaSignature = RSASignature(Uint8List.fromList(signature));
       return s.verifySignature(Uint8List.fromList(body), rsaSignature);
     } catch (e) {
-      _logger.warning(
-          'RS256 token verification failed with following error: $e.', e);
+      _logger.warning('RS256 token verification failed with following error: $e.', e);
       return false;
     }
   }
@@ -174,15 +168,7 @@ class JWTError implements Exception {
 /// JSON Web Token.
 class JWT {
   /// List of standard (reserved) claims.
-  static const reservedClaims = [
-    'iss',
-    'aud',
-    'iat',
-    'exp',
-    'nbf',
-    'sub',
-    'jti'
-  ];
+  static const reservedClaims = ['iss', 'aud', 'iat', 'exp', 'nbf', 'sub', 'jti'];
 
   /// List of reserved headers.
   static const reservedHeaders = ['typ', 'alg'];
@@ -257,8 +243,7 @@ class JWT {
 
   @override
   String toString() {
-    final buffer = StringBuffer()
-      ..writeAll([encodedHeader, '.', encodedPayload]);
+    final buffer = StringBuffer()..writeAll([encodedHeader, '.', encodedPayload]);
     if (signature is String) {
       buffer.writeAll(['.', signature]);
     }
@@ -370,8 +355,7 @@ class JWTBuilder {
     final encodedHeader = _base64Unpadded(_jsonToBase64Url.encode(_headers));
     final encodedPayload = _base64Unpadded(_jsonToBase64Url.encode(_claims));
     final body = '$encodedHeader.$encodedPayload';
-    final signature =
-        _base64Unpadded(base64Url.encode(signer.sign(utf8.encode(body))));
+    final signature = _base64Unpadded(base64Url.encode(signer.sign(utf8.encode(body))));
     return JWT._(encodedHeader, encodedPayload, signature);
   }
 }
@@ -392,9 +376,9 @@ class JWTed25519Signer implements JWTSigner {
   final ed.PrivateKey privateKey;
 
   JWTed25519Signer({
-    String secret,
-    this.publicKey,
-    this.privateKey,
+    required String secret,
+    required this.publicKey,
+    required this.privateKey,
   }) : secret = utf8.encode(secret);
 
   @override
@@ -460,8 +444,7 @@ class JWTValidator {
 
   /// Creates new validator. One can supply custom value for [currentTime]
   /// parameter, if not [DateTime.now] is used by default.
-  JWTValidator({DateTime? currentTime})
-      : currentTime = currentTime ?? DateTime.now();
+  JWTValidator({DateTime? currentTime}) : currentTime = currentTime ?? DateTime.now();
 
   /// Validates provided [token] and returns a list of validation errors.
   /// Empty list indicates there were no validation errors.
